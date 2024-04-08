@@ -54,3 +54,24 @@ function shuffle(array) {
 }
 
 window.onload = afficherRecettes;
+document.addEventListener("DOMContentLoaded", function() {
+    const addToFavoritesBtn = document.getElementById("addToFavoritesBtn");
+
+    addToFavoritesBtn.addEventListener("click", function() {
+        const recetteTitle = document.getElementById("recetteModalLabel").innerText;
+        const recetteBody = document.getElementById("recetteModalBody").innerText;
+        const recette = {
+            title: recetteTitle,
+            body: recetteBody
+        };
+        let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+        const existingRecipeIndex = favoris.findIndex(item => item.title === recette.title);
+        if (existingRecipeIndex === -1) {
+            favoris.push(recette);
+            localStorage.setItem("favoris", JSON.stringify(favoris));
+            alert("Recette ajoutée aux favoris !");
+        } else {
+            alert("Cette recette est déjà dans vos favoris !");
+        }
+    });
+});
