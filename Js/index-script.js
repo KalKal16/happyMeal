@@ -1,13 +1,5 @@
-// Fonction pour mélanger aléatoirement un tableau
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
 async function afficherRecettes() {
-    const response = await fetch('./data.json');
+    const response = await fetch('data.json');
     const data = await response.json();
     const recettesContainer = document.getElementById('recettesContainer');
     const recettesMelangees = shuffle(data.recettes);
@@ -20,12 +12,45 @@ async function afficherRecettes() {
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">${recette.nom}</h5>
+                    <p class="card-text">Temps de préparation: ${recette.temps_preparation}</p>
                     <p class="card-text">Catégorie: ${recette.categorie}</p>
-                    <a href="#" class="btn btn-primary">Voir la recette</a>
+                    <button class="btn btn-primary voir-recette" data-bs-toggle="modal" data-bs-target="#recetteModal" data-id="${i}">Voir la recette</button>
                 </div>
             </div>
         `;
         recettesContainer.appendChild(card);
     }
+    const voirRecetteBtns = document.querySelectorAll('.voir-recette');
+    voirRecetteBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const recetteIndex = btn.getAttribute('data-id');
+            const recette = recettesMelangees[recetteIndex];
+            afficherRecetteModal(recette);
+        });
+    });
 }
+function afficherRecetteModal(recette) {
+    const modalTitle = document.getElementById('recetteModalLabel');
+    const modalBody = document.getElementById('recetteModalBody');
+    modalTitle.textContent = recette.nom;
+    let ingredientsHtml = '<h6>Ingrédients :</h6><ul>';
+    recette.ingredients.forEach(ingredient => {
+        ingredientsHtml += `<li>${ingredient.quantite} ${ingredient.nom}</li>`;
+    });
+    ingredientsHtml += '</ul>';
+    let etapesHtml = '<h6>Étapes :</h6><ol>';
+    recette.etapes.forEach(etape => {
+        etapesHtml += `<li>${etape}</li>`;
+    });
+    etapesHtml += '</ol>';
+    modalBody.innerHTML = ingredientsHtml + etapesHtml;
+}
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 window.onload = afficherRecettes;
