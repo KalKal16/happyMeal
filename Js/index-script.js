@@ -69,9 +69,21 @@ document.addEventListener("DOMContentLoaded", function() {
         if (existingRecipeIndex === -1) {
             favoris.push(recette);
             localStorage.setItem("favoris", JSON.stringify(favoris));
-            alert("Recette ajoutée aux favoris !");
+            showNotification("Recette ajoutée aux favoris !");
         } else {
-            alert("Cette recette est déjà dans vos favoris !");
+            showNotification("Cette recette est déjà dans vos favoris !");
         }
     });
+
+    function showNotification(message) {
+        const modalBody = document.getElementById("recetteModalBody");
+        const notification = document.createElement("div");
+        notification.className = "alert alert-success mt-3";
+        notification.setAttribute("role", "alert");
+        notification.textContent = message;
+        modalBody.appendChild(notification);
+        setTimeout(function() {
+            notification.remove();
+        }, 3000);
+    }
 });
