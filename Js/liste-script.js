@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     afficherFavoris();
+    const telechargerListeBtn = document.getElementById("telechargerListe");
+    telechargerListeBtn.addEventListener("click", telechargerListeDeCourses);
 });
 
 function afficherFavoris() {
@@ -23,4 +25,18 @@ function supprimerIngredient(index) {
     favoris.splice(index, 1);
     localStorage.setItem("favoris", JSON.stringify(favoris));
     afficherFavoris();
+}
+
+function telechargerListeDeCourses() {
+    const favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const contenuFichier = favoris.join('\n');
+    const blob = new Blob([contenuFichier], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "liste_de_courses.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }

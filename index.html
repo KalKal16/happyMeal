@@ -13,11 +13,6 @@
     <header>
         <nav class="navbar bg-body-tertiary">
             <div class="container-fluid">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Search">
-                    <button class="btn btn-outline color-text" type="submit">Rechercher</button>
-                </form>
-
                 <ul class="nav">
                     <li class="nav-item">
                         <a class="nav-link active color-text" aria-current="page" href="index.html">Accueil</a>
@@ -37,7 +32,13 @@
     </header>
 
     <div class="container mt-4" id="recettesContainer">
+        <p>Afficher vos recettes ici...</p>
     </div>
+
+    <div class="text-center mt-4">
+        <button id="afficherToutesRecettesBtn" class="btn btn-primary">Afficher toutes les recettes</button>
+    </div>
+
     <div class="modal fade" id="recetteModal" tabindex="-1" aria-labelledby="recetteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
