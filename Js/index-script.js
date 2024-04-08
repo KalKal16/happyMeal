@@ -34,8 +34,8 @@ function afficherRecetteModal(recette) {
     const modalBody = document.getElementById('recetteModalBody');
     modalTitle.textContent = recette.nom;
     let ingredientsHtml = '<h6>Ingrédients :</h6><ul>';
-    recette.ingredients.forEach(ingredient => {
-        ingredientsHtml += `<li>${ingredient.quantite} ${ingredient.nom}</li>`;
+    recette.ingredients.forEach((ingredient, index) => {
+        ingredientsHtml += `<li>${ingredient.quantite} ${ingredient.nom} <button class="btn btn-success btn-sm add-to-favorites" data-index="${index}">+</button></li>`;
     });
     ingredientsHtml += '</ul>';
     let etapesHtml = '<h6>Étapes :</h6><ol>';
@@ -44,6 +44,26 @@ function afficherRecetteModal(recette) {
     });
     etapesHtml += '</ol>';
     modalBody.innerHTML = ingredientsHtml + etapesHtml;
+
+    const addToFavoritesBtns = document.querySelectorAll('.add-to-favorites');
+    addToFavoritesBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = btn.getAttribute('data-index');
+            addToFavorites(recette.ingredients[index]);
+        });
+    });
+}
+
+function addToFavorites(ingredient) {
+    let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const existingIngredientIndex = favoris.findIndex(item => item === ingredient.nom);
+    if (existingIngredientIndex === -1) {
+        favoris.push(ingredient.nom);
+        localStorage.setItem("favoris", JSON.stringify(favoris));
+        showNotification(`Ingrédient "${ingredient.nom}" ajouté aux favoris !`);
+    } else {
+        showNotification(`L'ingrédient "${ingredient.nom}" est déjà dans vos favoris !`);
+    }
 }
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -54,6 +74,7 @@ function shuffle(array) {
 }
 
 window.onload = afficherRecettes;
+
 document.addEventListener("DOMContentLoaded", function() {
     const addToFavoritesBtn = document.getElementById("addToFavoritesBtn");
 
