@@ -1,36 +1,40 @@
-//Une fois les données récupérées, elle les mélange en utilisant la fonction shuffle. Elle crée des cartes HTML pour chaque recette en utilisant les données récupérées et les ajoute au conteneur spécifié dans le HTML. Chaque carte contient un bouton "Voir la recette" qui, lorsqu'il est cliqué, affiche une modale avec les détails de la recette correspondante.
-async function afficherRecettes() {
-    const response = await fetch('data.json');
-    const data = await response.json();
-    const recettesContainer = document.getElementById('recettesContainer');
-    const recettesMelangees = shuffle(data.recettes);
-    const nombreDeRecettes = 4;
-    for (let i = 0; i < nombreDeRecettes; i++) {
-        const recette = recettesMelangees[i];
-        const card = document.createElement('div');
-        card.classList.add('col-md-6', 'mb-4');
-        card.innerHTML = `
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">${recette.nom}</h5>
-                    <p class="card-text">Temps de préparation: ${recette.temps_preparation}</p>
-                    <p class="card-text">Catégorie: ${recette.categorie}</p>
-                    <button class="btn btn-primary voir-recette" data-bs-toggle="modal" data-bs-target="#recetteModal" data-id="${i}">Voir la recette</button>
-                </div>
-            </div>
-        `;
-        recettesContainer.appendChild(card);
-    }
-    const voirRecetteBtns = document.querySelectorAll('.voir-recette');
-    voirRecetteBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const recetteIndex = btn.getAttribute('data-id');
-            const recette = recettesMelangees[recetteIndex];
-            afficherRecetteModal(recette);
-        });
-    });
+function afficherRecettes() {
+    fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+            const recettesContainer = document.getElementById('recettesContainer');
+            const recettesMelangees = shuffle(data.recettes);
+            const nombreDeRecettes = 4;
+            for (let i = 0; i < nombreDeRecettes; i++) {
+                const recette = recettesMelangees[i];
+                const card = document.createElement('div');
+                card.classList.add('col-md-6', 'mb-4');
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${recette.nom}</h5>
+                            <p class="card-text">Temps de préparation: ${recette.temps_preparation}</p>
+                            <p class="card-text">Catégorie: ${recette.categorie}</p>
+                            <button class="btn btn-primary voir-recette" data-bs-toggle="modal" data-bs-target="#recetteModal" data-id="${i}">Voir la recette</button>
+                        </div>
+                    </div>
+                `;
+                recettesContainer.appendChild(card);
+            }
+            const voirRecetteBtns = document.querySelectorAll('.voir-recette');
+            voirRecetteBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const recetteIndex = btn.getAttribute('data-id');
+                    const recette = recettesMelangees[recetteIndex];
+                    afficherRecetteModal(recette);
+                });
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des données:', error));
 }
-//elle prend une recette en argument et affiche ses détails dans une modale. Elle affiche les ingrédients et les étapes de la recette. Chaque ingrédient a un bouton "+" pour l'ajouter aux favoris.
+
+
+
 function afficherRecetteModal(recette) {
     const modalTitle = document.getElementById('recetteModalLabel');
     const modalBody = document.getElementById('recetteModalBody');
@@ -51,23 +55,35 @@ function afficherRecetteModal(recette) {
     addToFavoritesBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const index = btn.getAttribute('data-index');
-            addToFavorites(recette.ingredients[index]);
+            addToFavorites(recette.ingredients[index].nom, "ingredient");
         });
     });
 }
-//Elle prend un ingrédient en argument et l'ajoute aux favoris stockés localement dans le navigateur de l'utilisateur en utilisant le stockage le localStorage. Elle vérifie d'abord si l'ingrédient est déjà présent dans les favoris. Elle affiche une notification pour informer l'utilisateur de l'ajout ou de la présence déjà existante de l'ingrédient dans les favoris.
-function addToFavorites(ingredient) {
+
+function addToFavorites(item, type) {
     let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-    const existingIngredientIndex = favoris.findIndex(item => item === ingredient.nom);
-    if (existingIngredientIndex === -1) {
-        favoris.push(ingredient.nom);
+    const existingItemIndex = favoris.findIndex(favItem => favItem === item);
+    if (existingItemIndex === -1) {
+        favoris.push(item);
         localStorage.setItem("favoris", JSON.stringify(favoris));
-        showNotification(`Ingrédient "${ingredient.nom}" ajouté aux favoris !`);
+        showNotification(`"${item}" ajouté aux favoris !`, type);
     } else {
-        showNotification(`L'ingrédient "${ingredient.nom}" est déjà dans vos favoris !`);
+        showNotification(`"${item}" est déjà dans vos favoris !`, type);
     }
 }
-//elle prend un tableau en argument et le mélange aléatoirement.
+
+function showNotification(message, type) {
+    const modalBody = document.getElementById("recetteModalBody");
+    const notification = document.createElement("div");
+    notification.className = "alert alert-success mt-3";
+    notification.setAttribute("role", "alert");
+    notification.textContent = message;
+    modalBody.appendChild(notification);
+    setTimeout(function() {
+        notification.remove();
+    }, 3000);
+}
+
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -77,10 +93,9 @@ function shuffle(array) {
 }
 
 window.onload = afficherRecettes;
-//Il est utilisé pour détecter lorsque le document HTML est entièrement chargé. Il ajoute un bouton "Ajouter aux favoris" dans la modale de la recette. Lorsque ce bouton est cliqué, il récupère le titre et le corps de la recette, les ajoute aux favoris, et affiche une notification en conséquence.
+
 document.addEventListener("DOMContentLoaded", function() {
     const addToFavoritesBtn = document.getElementById("addToFavoritesBtn");
-
     addToFavoritesBtn.addEventListener("click", function() {
         const recetteTitle = document.getElementById("recetteModalLabel").innerText;
         const recetteBody = document.getElementById("recetteModalBody").innerText;
@@ -93,22 +108,9 @@ document.addEventListener("DOMContentLoaded", function() {
         if (existingRecipeIndex === -1) {
             favoris.push(recette);
             localStorage.setItem("favoris", JSON.stringify(favoris));
-            showNotification("Recette ajoutée aux favoris !");
+            showNotification("Recette ajoutée aux favoris !", "recette");
         } else {
-            showNotification("Cette recette est déjà dans vos favoris !");
+            showNotification("Cette recette est déjà dans vos favoris !", "recette");
         }
     });
-
-    function showNotification(message) {
-        const modalBody = document.getElementById("recetteModalBody");
-        const notification = document.createElement("div");
-        notification.className = "alert alert-success mt-3";
-        notification.setAttribute("role", "alert");
-        notification.textContent = message;
-        modalBody.appendChild(notification);
-        setTimeout(function() {
-            notification.remove();
-        }, 3000);
-    }
 });
-
