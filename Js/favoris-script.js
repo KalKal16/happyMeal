@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <p>Jour de la semaine: ${recette.day}</p>
                     <p>Moment de la journée: ${recette.timeOfDay}</p>
                     <button class="btn btn-danger delete-btn" data-index="${index}">Supprimer</button>
-                    <button class="btn btn-primary select-btn" data-index="${index}">Sélectionner</button>
+                    <button class="btn color-btn select-btn" data-index="${index}">Sélectionner</button>
                 </div>
             `;
             favoritesList.appendChild(recetteCard);

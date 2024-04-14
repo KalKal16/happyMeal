@@ -15,7 +15,7 @@ function afficherRecettes() {
                             <h5 class="card-title">${recette.nom}</h5>
                             <p class="card-text">Temps de préparation: ${recette.temps_preparation}</p>
                             <p class="card-text">Catégorie: ${recette.categorie}</p>
-                            <button class="btn btn-primary voir-recette" data-bs-toggle="modal" data-bs-target="#recetteModal" data-id="${i}">Voir la recette</button>
+                            <button class="btn color-btn voir-recette" data-bs-toggle="modal" data-bs-target="#recetteModal" data-id="${i}">Voir la recette</button>
                         </div>
                     </div>
                 `;
@@ -41,7 +41,7 @@ function afficherRecetteModal(recette) {
     modalTitle.textContent = recette.nom;
     let ingredientsHtml = '<h6>Ingrédients :</h6><ul>';
     recette.ingredients.forEach((ingredient, index) => {
-        ingredientsHtml += `<li>${ingredient.quantite} ${ingredient.nom} <button class="btn btn-success btn-sm add-to-favorites" data-index="${index}">+</button></li>`;
+        ingredientsHtml += `<li>${ingredient.quantite} ${ingredient.nom} <button class="btn color-btn btn-sm add-to-favorites" data-index="${index}">+</button></li>`;
     });
     ingredientsHtml += '</ul>';
     let etapesHtml = '<h6>Étapes :</h6><ol>';
